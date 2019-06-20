@@ -17,13 +17,27 @@ class ChannelOcupation:
 	def start_simulation(self, total_steps, name='heterodoxia'):
 		steps = 0
 		
-		while steps<= total_steps:
-			node_1 = np.random.randint(1, len(G)) 
-			node_2 = np.random.randint(1, len(G)) 
+		while steps<= total_steps: 
+			node_1 = np.random.randint(1, len(self.G)) 
+			node_2 = np.random.randint(1, len(self.G))
 
 			if (node_1 !=node_2) and nx.has_path(self.G, node_1, node_2):
 				self.remove_channel(nx.shortest_path(self.G, source=node_1, target=node_2))
 				self.save_size_subgraphs(name)
 				steps+=1
+				if probability:
+					self.save_frecuency(self.frecuency(), f'{name}_probability')
 
+	def frecuency(self)
+		sucefful = 0
+		for i in range(10000):
+			node_1 = np.random.randint(1, len(self.G)) 
+			node_2 = np.random.randint(1, len(self.G))
 
+			if (node_1 !=node_2) and nx.has_path(self.G, node_1, node_2):
+				sucefful+=1 
+
+		return sucefful/10000
+
+	def save_frecuency():
+		pass
