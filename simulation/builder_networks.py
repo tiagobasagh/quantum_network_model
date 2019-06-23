@@ -3,7 +3,7 @@ import numpy as np
 
 class BuilderNetworks:
 
-	def erdos_reny_model(size, probability):
+	def erdos_renyi_model(size, probability):
 		return nx.erdos_renyi_graph(size, probability)
 
 	def configuration_model(size, scale, name='poisson', loc=None):
@@ -19,8 +19,8 @@ class BuilderNetworks:
 	def tree_model(children, generations):
 		return nx.balanced_tree(children, generations)
 
-	def barbaresi_model(size, ):
-		return nx.barabasi_albert_graph(size, )
+	def barbaresi_model(size,algo):
+		return nx.barabasi_albert_graph(size, algo)
 
 
 def make_distribution(size, scale, name, loc):

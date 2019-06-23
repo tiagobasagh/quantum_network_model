@@ -1,6 +1,9 @@
+
 import networkx as nx 
 import numpy as np
 
+from builder_networks import BuilderNetworks
+from config import stored_path
 
 class ChannelOcupation:
 	def __init__(self, G):
@@ -11,10 +14,17 @@ class ChannelOcupation:
 			e = (list_path[i_path],list_path[i_path+1])
 			self.G.remove_edge(*e)
 
-	def save_size_subgraphs(self):
-		return list(nx.connected_component_subgraphs(self.G))
+	def save_size_subgraphs(self, name):
+		size_subgraphs = list(nx.connected_component_subgraphs(self.G))
+		
+		f=open(f'{stored_path.format(name)}',"a")
+		for subG in size_subgraphs:
+			f.write(f'{subG.number_of_nodes()},')
 
-	def start_simulation(self, total_steps, name='heterodoxia'):
+		f.write(f'{self.G.number_of_nodes()}\n')
+		f.close()
+
+	def start_simulation(self, total_steps, name='heterodoxia', probability=False):
 		steps = 0
 		
 		while steps<= total_steps: 
@@ -26,9 +36,10 @@ class ChannelOcupation:
 				self.save_size_subgraphs(name)
 				steps+=1
 				if probability:
-					self.save_frecuency(self.frecuency(), f'{name}_probability')
+					self.frecuency(f'{name}_frecuency')
 
-	def frecuency(self)
+	
+	def frecuency(self, name):
 		sucefful = 0
 		for i in range(10000):
 			node_1 = np.random.randint(1, len(self.G)) 
@@ -37,7 +48,6 @@ class ChannelOcupation:
 			if (node_1 !=node_2) and nx.has_path(self.G, node_1, node_2):
 				sucefful+=1 
 
-		return sucefful/10000
-
-	def save_frecuency():
-		pass
+		f=open(f'{stored_path.format(name)}',"a+")
+		f.write(f'{sucefful/10000 } \n')
+		f.close()
