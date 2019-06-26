@@ -35,6 +35,7 @@ class ChannelOcupation:
 				self.remove_channel(nx.shortest_path(self.G, source=node_1, target=node_2))
 				self.save_size_subgraphs(name)
 				steps+=1
+				print(steps)
 				if probability:
 					self.frecuency(f'{name}_frecuency')
 
@@ -49,5 +50,5 @@ class ChannelOcupation:
 				sucefful+=1 
 
 		f=open(f'{stored_path.format(name)}',"a+")
-		f.write(f'{sucefful/10000 } \n')
+		f.write(f'{sucefful/10000 }\n')
 		f.close()
