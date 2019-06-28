@@ -23,7 +23,7 @@ class BuilderNetworks:
 		return nx.barabasi_albert_graph(size, algo)
 
 
-def make_distribution(size, scale, name, loc):
+def make_distribution(size, scale, name, loc=None):
 	dic_distributions = {'poisson': np.random.poisson,
 	                     'power': np.random.power,
 	                     'normal': np.random.normal,
@@ -35,6 +35,4 @@ def make_distribution(size, scale, name, loc):
 		distribution = dic_distributions[name](scale, size)
 
 	return distribution.tolist()
-
-
 
