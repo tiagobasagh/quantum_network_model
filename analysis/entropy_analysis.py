@@ -35,14 +35,29 @@ def calculate_entropy(name):
 
 	return historic_entropy, math.log(N)
 
+def make_list_files(schema_file, inicial, final, intervalo):
+	list_files = []
+	for N in range(inicial, final, intervalo):
+		list_files.append(schema_file.format(N))
+
+	return list_files 
 
 def critical_step(entropy, max_entropy):
 	step = 0
-
 	while(entropy[step] < max_entropy/4) and (step < (len(entropy)-2)):
 		step+=1
 
 	return step
+
+
+def search_critical_steps(name=[]):
+	critical_steps = []
+
+	for file in name:
+		entropy,max_entropy = calculate_entropy(file)
+		critical_steps.append(critical_step(entropy, max_entropy))
+
+	return critical_steps
 
 
 def plot_entropy(entropy_curves=[], labels=[], max_entropy=0):

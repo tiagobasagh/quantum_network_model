@@ -1,3 +1,4 @@
+import math 
 import numpy as np
 
 def eigein_value(k):
@@ -13,34 +14,31 @@ def normal_mode(k, j_o, size):
 	if j_o == 0: 
 		vec.append(0)
 		vec.append(1)
-		vec.append(0)
-		j = 2
+		vec.append(0) 
+		j = 2	
 	else:
 		vec.append(1)
 		vec.append(0)
-		j = 1
-
-	print(size)
-	while j < size:
-		print(j)
-		print(vec)
-		if j <k:
+		j = 1 
+	
+	while j+1 < size:
+		if j%2==j_o%2 and j<k:
 			A *=recursive_value(j, k)
 			vec.append(A)
-			vec.append(0)
-			j+=2
 		else:
 			vec.append(0)
-			j+=1
+
+		j+=1
 
 	return vec
+
 
 def make_elements(total_normal_modes):
 	normal_modes = []
 	eigein_values = []
 	for k in range(1, total_normal_modes + 1):
 		eigein_values.append( eigein_value(k))
-		normal_modes.append( normal_mode(k, k%2, total_normal_modes+ 2))
+		normal_modes.append( normal_mode(k, k%2, total_normal_modes))
 
 	return normal_modes
 
@@ -58,15 +56,29 @@ def build_matrix(l_of_l):
 	
 	return a
 
-ltol = make_elements(4)
+def poisson_coordenates(lamda, k):
+	return math.exp(-lamda)*lamda**k/math.factorial(k)
 
-print(ltol)
-M = np.matrix(build_matrix(ltol))
-v_poisson = np.random.poisson(10, 6)
+def make_v_poisson(lamda, size):
+	v_poisson = []
+	for k in range(size):
+		v_poisson.append(poisson_coordenates(lamda,k))
+
+	return v_poisson
 
 
-solution = np.linalg.lstsq(M, v_poisson, rcond=None)
+def solve_equation(lamda, size):
+	M = np.matrix(build_matrix(make_elements(size)))
+	v_poisson = make_v_poisson(lamda, size)
+	solution = np.linalg.solve(M, v_poisson)
 
-print(M)
-print(v_poisson)
-print(solution[0])
+	return solution
+
+#normal_mode(4, 0, 4)
+
+size = 30
+lamda = 10
+sol = solve_equation(lamda, size)
+print(sol)
+
+
