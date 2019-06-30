@@ -1,84 +1,78 @@
 import math 
 import numpy as np
 
-def eigein_value(k):
+def original_matrix(size):
+	M = np.zeros((size,size))
+	for i in range(size):
+		M[i,i] = a_value(i+1)
+
+		if i < size-2:
+			M[i,i+2] = b_value(i+1)
+
+	return M
+
+def a_value(k):
 	return -k*(k-1)
 
-def recursive_value(j,k):
-	return (j*(j-1) - k*(k-1))/((j+1)*(j+2))
-
-def normal_mode(k, j_o, size):
-	vec =[]
-	A = 1 
-	
-	if j_o == 0: 
-		vec.append(0)
-		vec.append(1)
-		vec.append(0) 
-		j = 2	
-	else:
-		vec.append(1)
-		vec.append(0)
-		j = 1 
-	
-	while j+1 < size:
-		if j%2==j_o%2 and j<k:
-			A *=recursive_value(j, k)
-			vec.append(A)
-		else:
-			vec.append(0)
-
-		j+=1
-
-	return vec
-
-
-def make_elements(total_normal_modes):
-	normal_modes = []
-	eigein_values = []
-	for k in range(1, total_normal_modes + 1):
-		eigein_values.append( eigein_value(k))
-		normal_modes.append( normal_mode(k, k%2, total_normal_modes))
-
-	return normal_modes
-
-
-def build_matrix(l_of_l):
-	a = ''
-	for i in range(len(l_of_l[0])):
-		for j in range(len(l_of_l)):
-			if j == len(l_of_l)-1:
-				a+= str(l_of_l[j][i])
-			else:
-				a+= str(l_of_l[j][i]) +','
-		if i != len(l_of_l[0])-1:
-			a+=';'
-	
-	return a
+def b_value(k):
+	return (k+1)*(k+2)
 
 def poisson_coordenates(lamda, k):
 	return math.exp(-lamda)*lamda**k/math.factorial(k)
 
-def make_v_poisson(lamda, size):
+def make_vec_poisson(lamda, size):
 	v_poisson = []
 	for k in range(size):
 		v_poisson.append(poisson_coordenates(lamda,k))
 
 	return v_poisson
 
+def mu_tau(tau, solution, self_value, M):	
+	vec = solution * np.exp(self_value*tau)
+	mu = np.matmul(M, vec)
+	return mu
+
+def lamda_tau(mu):
+	lamda = 0
+	for i in range(len(mu)):
+		lamda += i * mu[i]
+	return lamda 
+
+def nu_tau(mu):
+	lamda = lamda_tau(mu)
+	p = 0
+	for i in range(len(mu)):
+		p += i*(i-1)* mu[i]
+
+	return p/lamda
+
+def integrate_nu(solution, self_values, M):
+	integral = 0
+	function = []
+	inversa = []
+	
+	for t in range(3):
+		mu = mu_tau(t,solution, self_values, M)
+		nu = nu_tau(mu)
+		lamda = lamda_tau(mu)
+		integral += math.log(nu)/(nu*lamda)
+		inversa.append( integral**(-1))	
+		function.append(integral)
+
+	print(integral)
+	print(function)
+	print(inversa)
 
 def solve_equation(lamda, size):
-	M = np.matrix(build_matrix(make_elements(size)))
-	v_poisson = make_v_poisson(lamda, size)
-	solution = np.linalg.solve(M, v_poisson)
+	M = original_matrix(size)
+	w,v = np.linalg.eig(M)
+	v_poisson = make_vec_poisson(lamda, size)
+	solution = np.linalg.solve(v, v_poisson)
+	integrate_nu(solution, w, v)
 
-	return solution
 
-#normal_mode(4, 0, 4)
 
-size = 30
-lamda = 10
-sol = solve_equation(lamda, size)
-print(sol)
+solve_equation(10, 10)
+
 
 
