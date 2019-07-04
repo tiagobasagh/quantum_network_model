@@ -5,7 +5,6 @@ def original_matrix(size):
 	M = np.zeros((size,size))
 	for i in range(size):
 		M[i,i] = a_value(i+1)
-
 		if i < size-2:
 			M[i,i+2] = b_value(i+1)
 
@@ -53,26 +52,27 @@ def integrate_nu(solution, self_values, M):
 	
 	for t in range(3):
 		mu = mu_tau(t,solution, self_values, M)
+		print(mu)
 		nu = nu_tau(mu)
 		lamda = lamda_tau(mu)
 		integral += math.log(nu)/(nu*lamda)
 		inversa.append( integral**(-1))	
 		function.append(integral)
 
-	print(integral)
-	print(function)
-	print(inversa)
+	#print(integral)
+	#print(function)
+	#print(math.log(10000) * 10000 * inversa[1]) 
 
 def solve_equation(lamda, size):
 	M = original_matrix(size)
-	w,v = np.linalg.eig(M)
+	eigen_values, eigen_vectors = np.linalg.eig(M)
 	v_poisson = make_vec_poisson(lamda, size)
-	solution = np.linalg.solve(v, v_poisson)
-	integrate_nu(solution, w, v)
+	solution = np.linalg.solve(eigen_vectors, v_poisson)
+	integrate_nu(solution, eigen_values,eigen_vectors)
 
 
 
-solve_equation(10, 10)
+solve_equation(10, 15)
 
 
 

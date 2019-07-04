@@ -1,8 +1,8 @@
-
 import math
 
 import csv 
 import matplotlib.pyplot as plt 
+from scipy.optimize import curve_fit
 
 from config import stored_path
 
@@ -35,12 +35,21 @@ def calculate_entropy(name):
 
 	return historic_entropy, math.log(N)
 
-def make_list_files(schema_file, inicial, final, intervalo):
-	list_files = []
-	for N in range(inicial, final, intervalo):
-		list_files.append(schema_file.format(N))
 
-	return list_files 
+def fit_curve(curve, x, y):
+
+	curves_dic = {'rational': rational_function,
+	              'linear_function': linear_function}
+
+	results = curve_fit(curves_dic[curve], x, y)
+	
+
+
+def rational_function(N, p, k, c):
+	return k/(N**p) + c 
+
+def linear_function(m, k, b):
+	return m*k + b
 
 def critical_step(entropy, max_entropy):
 	step = 0
@@ -60,7 +69,7 @@ def search_critical_steps(name=[]):
 	return critical_steps
 
 
-def plot_entropy(entropy_curves=[], labels=[], max_entropy=0):
+def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, title='Entropy'):
 		plt.figure(1)
 		
 		for s in range(len(entropy_curves)):
@@ -76,4 +85,5 @@ def plot_entropy(entropy_curves=[], labels=[], max_entropy=0):
 		
 		
 		plt.legend()
+		plt.title(title)
 		plt.show()
