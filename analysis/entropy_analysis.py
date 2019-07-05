@@ -1,25 +1,14 @@
+# default libreries
 import math
-
-import csv 
+# extearnal libraries
 import matplotlib.pyplot as plt 
 from scipy.optimize import curve_fit
 
-from config import stored_path
-
-def get_data(name):
-	data = []
-	with open(stored_path.format(name)) as csv_file:
-		csv_reader = csv.reader(csv_file, delimiter=',')
-		for row in csv_reader:
-			data.append(row)
-	
-	return data
+from tools import get_data
 
 def shanon_entropy(p):
 	return - p * math.log(p)
 
-def renyi_entropy(p):
-	pass
 
 def calculate_entropy(name):
 	historic_probability = get_data(name)
@@ -30,44 +19,9 @@ def calculate_entropy(name):
 		for i in range(len(probability)-1):
 			s+= shanon_entropy(float(probability[i])/N)
 		
-
 		historic_entropy.append(s)
 
 	return historic_entropy, math.log(N)
-
-
-def fit_curve(curve, x, y):
-
-	curves_dic = {'rational': rational_function,
-	              'linear_function': linear_function}
-
-	results = curve_fit(curves_dic[curve], x, y)
-	
-
-
-def rational_function(N, p, k, c):
-	return k/(N**p) + c 
-
-def linear_function(m, k, b):
-	return m*k + b
-
-def critical_step(entropy, max_entropy):
-	step = 0
-	while(entropy[step] < max_entropy/4) and (step < (len(entropy)-2)):
-		step+=1
-
-	return step
-
-
-def search_critical_steps(name=[]):
-	critical_steps = []
-
-	for file in name:
-		entropy,max_entropy = calculate_entropy(file)
-		critical_steps.append(critical_step(entropy, max_entropy))
-
-	return critical_steps
-
 
 def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, title='Entropy'):
 		plt.figure(1)
@@ -87,3 +41,22 @@ def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, title='Entropy'):
 		plt.legend()
 		plt.title(title)
 		plt.show()
+
+
+def search_critical_steps(name=[]):
+	critical_steps = []
+
+	for file in name:
+		entropy,max_entropy = calculate_entropy(file)
+		critical_steps.append(critical_step(entropy, max_entropy))
+
+	return critical_steps
+
+def critical_step(entropy, max_entropy):
+	step = 0
+	while(entropy[step] < max_entropy/4) and (step < (len(entropy)-2)):
+		step+=1
+
+	return step
+
+
