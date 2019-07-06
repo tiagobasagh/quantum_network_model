@@ -35,8 +35,9 @@ k = 0.50749265
 b = 0.43652343
 N = 10000
 lamda = k/(m*(N/1000)**p) + (b-d)/m
-
-
+b-d/m
+conexion_critica/N = critical_rate = k (lamda/(N/1000)^p) + b
+ 
 f =  k/(N/1000)^p + b 
 f = m * lamda + d 
 
@@ -59,13 +60,14 @@ def fix_lamda(schema_files, inicial, final, intervalo, lamda):
 	#exp_popt, exp_pcov = fit_curve('exponential', x, y)
 	rat_popt, rat_pcov = fit_curve('rational', x, y)
 	print(rat_popt)
+	print(rat_pcov)
 	plt.figure(1)
 	plt.plot(x, y, 'ko', label='Simulation: Critial ratio(lamda)')
 	#plt.plot(x, exponential_function(np.asarray(x), *exp_popt),  
 	#	     'r-', label= 'Exponential:')
 
 	plt.plot(x, rational_function(np.asarray(x), *rat_popt),  
-		     'r-', label= f'Rational: m/x^p + b')
+		     '--', label= f'Rational fit: m/x^p + b', color='red')
 
 	plt.legend()
 	plt.title('Configuration model: Critical Ratio vs Size')
@@ -86,15 +88,18 @@ def fix_size(schema_files, inicial, final, intervalo, size):
 	
 
 	popt, pcov = fit_curve('linear', x, y)
+	print(popt)
 	print(pcov)
 	plt.figure(1)
-	plt.plot(x, y, 'ko', label='Simulation: Critial ratio(lamda)')
+	plt.plot(x, y, 'ko', label='Simulation: Critial ratio(lambda)')
 	plt.plot(x, linear_function(np.asarray(x), *popt),  
-		     'r-', label= f'linear fit: ({int(1000*popt[0])/1000})x + ({int(1000*popt[1])/1000})')
+		     '--', 
+		     label= f'linear fit: m*x + b',
+		     color='red')
 
 	plt.legend()
 	plt.title('Configuration model: Critical Ratio vs Lamda')
-	plt.xlabel('Lamda')
+	plt.xlabel('Lambda')
 	plt.ylabel('Critical ratio')
 	plt.show()
 	

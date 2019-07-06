@@ -27,7 +27,7 @@ def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, title='Entropy'):
 		plt.figure(1)
 		
 		for s in range(len(entropy_curves)):
-			plt.plot(entropy_curves[s], label= labels[s] )
+			plt.plot(list(range(1,len(entropy_curves[s])+1)), entropy_curves[s], label= labels[s])
 
 		if len(entropy_curves) == 1:
 			
@@ -37,8 +37,9 @@ def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, title='Entropy'):
 			plt.vlines(critical, 0, max_entropy, 
 				       colors='r', linestyles='dashed', label=f'Critical connection: {critical}')
 		
-		
-		plt.legend()
+		plt.xlabel('Connections')
+		plt.ylabel('Entropy')
+		plt.legend(loc='best')
 		plt.title(title)
 		plt.show()
 

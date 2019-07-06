@@ -27,7 +27,8 @@ def make_distribution(size, scale, name, loc=None):
 	dic_distributions = {'poisson': np.random.poisson,
 	                     'power': np.random.power,
 	                     'normal': np.random.normal,
-	                     'exponential': np.random.exponential}
+	                     'exponential': np.random.exponential,
+	                     'equi': np.random.randint}
 
 	if loc:
 		distribution = dic_distributions[name](loc, scale, size)
@@ -35,4 +36,3 @@ def make_distribution(size, scale, name, loc=None):
 		distribution = dic_distributions[name](scale, size)
 
 	return distribution.tolist()
-
