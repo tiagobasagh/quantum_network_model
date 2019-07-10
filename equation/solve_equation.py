@@ -1,5 +1,6 @@
 import math 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def original_matrix(size):
 	M = np.zeros((size,size))
@@ -21,14 +22,20 @@ def poisson_coordenates(lamda, k):
 
 def make_vec_poisson(lamda, size):
 	v_poisson = []
-	for k in range(size):
+	for k in range(1, size+1):
 		v_poisson.append(poisson_coordenates(lamda,k))
 
 	return v_poisson
 
-def mu_tau(tau, solution, self_value, M):	
-	vec = solution * np.exp(self_value*tau)
-	mu = np.matmul(M, vec)
+def mu_tau(tau, solution, self_value, self_vector):	
+	mu = []
+	for i in range(len(solution)):
+		aux_mu = 0
+		for k in range(len(solution)):
+			aux_mu += self_vector[i][k] *  solution[k] * np.exp(self_value[k]*tau)
+		
+		mu.append(aux_mu) 
+
 	return mu
 
 def lamda_tau(mu):
@@ -45,34 +52,46 @@ def nu_tau(mu):
 
 	return p/lamda
 
-def integrate_nu(solution, self_values, M):
-	integral = 0
-	function = []
-	inversa = []
-	
-	for t in range(3):
-		mu = mu_tau(t,solution, self_values, M)
-		print(mu)
+def critical_t(solution, self_values, self_vector):
+	tau = 0
+	dtau = 0.0001
+	t_c = 0
+	nu = 100
+	while nu > 1:
+		mu = mu_tau(tau, solution, self_values, self_vector)
 		nu = nu_tau(mu)
-		lamda = lamda_tau(mu)
-		integral += math.log(nu)/(nu*lamda)
-		inversa.append( integral**(-1))	
-		function.append(integral)
-
-	#print(integral)
-	#print(function)
-	#print(math.log(10000) * 10000 * inversa[1]) 
+		lamda= lamda_tau(mu)
+		t_c+= dtau * nu*lamda/math.log(math.exp(1), nu)
+		tau+=dtau
+	
+	return t_c
+	#print(integral/np.log(10000) * 10000)
+		
 
 def solve_equation(lamda, size):
-	M = original_matrix(size)
-	eigen_values, eigen_vectors = np.linalg.eig(M)
+	M = original_matrix(size) # crea la matriz
+	eigen_values, eigen_vectors = np.linalg.eig(M) # devuelve autovalores/vectores
 	v_poisson = make_vec_poisson(lamda, size)
 	solution = np.linalg.solve(eigen_vectors, v_poisson)
-	integrate_nu(solution, eigen_values,eigen_vectors)
+	return critical_t(solution, eigen_values, eigen_vectors)
 
 
 
-solve_equation(10, 15)
+def critical_time_vs_lambda(lambda_min, lambda_max, size):
+	t_c = []
+	for i in range(lambda_min, lambda_max):
+		t_c.append(solve_equation(i, size))
+
+	plt.figure(1)
+	plt.plot(list(range(lambda_min, lambda_max)), t_c, 'ro', label='numerical results')
+	plt.legend()
+	plt.xlabel('Lambda')
+	plt.ylabel('Critical time')
+	plt.title('Large graph limit of critical times')
+	plt.show()
+
+
+critical_time_vs_lambda(4, 21, 75)
 
 
 
