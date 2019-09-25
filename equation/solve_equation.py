@@ -15,123 +15,73 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
+def poisson_coordenates(lamda, k):
+	""" 
+	:param int lamda: mean of degree distribution to a poisson distribution.
+	:param int k:  ????
+	
+	:return float: Value of a possion distributio P(lamda, k).
+	"""
+	return math.exp(-lamda)*lamda**k/math.factorial(k)
+
+def make_vec_poisson(lamda, size):
+	"""
+	:param int lamda:  mean of degree distribution to a poisson distribution.
+	:param int size: size of the array distribution.
+
+	:return list: returnt a list like as poission distribution.
+	"""
+	return [poisson_coordenates(lamda, k) for k in range(size)]
+
+
+
+def emptylist(size):
+	"""
+	create a empty list
+	
+	:param int size: longitud of the list. 
+
+	:return list: empty  list with len = `size` 
+	"""
+	empty_list = []
+	for i in range(0, size):
+		empty_list.append([])
+
+	return empty_list
+
+
 def original_matrix(size):
-	"""Build de matrix that describe the diferential equation.
-
-    Parameters
-    ==========
-    int: size of the matrix.
-
-    Returns
-    =======
-    np.array:
-      return an array 
+	"""
+	Build de matrix that describe the diferential equation.
     """
 	M = np.zeros((size, size))
-	for i in range(size):
-		M[i,i] = a_value(i+1)
+	for i in range(0, size):
+		if not i in (0, 1):
+			M[i,i] = a_value(i)
+		
 		if i < size-2:
-			M[i,i+2] = b_value(i+1)
+			M[i,i+2] = b_value(i)
 
 	return M
 
 def a_value(k):
-	"""Diagonal coeficient of the matrix. 
-	
-	Parameters
-	==========
-	int: k position inside the matrix.
-
-	Returns
-	======
-	int: diagonal coeficient value 
+	"""
+	Diagonal coeficient of the matrix. 
 	"""
 	return -k*(k-1)
 
 def b_value(k):
-	"""Unique coeficients [k, k+2] non zero outside diagonal. 
-		
-	Parameters
-	==========
-	int: K, position inside the matrix.
-
-	Returns
-	======
-	int: non diagonal coeficient value.
+	"""
+	Unique coeficients [k, k+2] non zero outside diagonal. 	
 	"""
 	return (k+1)*(k+2)
 
-def poisson_coordenates(lamda, k):
-	""" 
-
-	Parameters
-	==========
-	int: lamda, mean of degree distribution to a poisson distribution.
-	int: k, ????
-
-	Returns
-	======
-	float: Value of a possion distributio P(lamda, k).
-
-	"""
-	return math.exp(-lamda)*lamda**k/math.factorial(k)
-
-
-def make_ver_uniform(lamda, size):
-	""" 
-
-	Parameters
-	==========
-	int: lamda, mean of degree distribution to a poisson distribution.
-	int: size, size of the array distribution.
-
-	Returns
-	======
-	list: list of floats, the element j is equal to P(lamda, j)
-
-	"""
-	v_poisson = []
-	for i in range(0, size):
-		if i < lamda:
-			v_poisson.append(1/lamda)
-		else:
-			v_poisson.append(0)
-
-	return v_poisson
-
-def make_vec_poisson(lamda, size):
-	""" 
-
-	Parameters
-	==========
-	int: lamda, mean of degree distribution to a poisson distribution.
-	int: size, size of the array distribution.
-
-	Returns
-	======
-	list: list of floats, the element j is equal to P(lamda, j)
-
-	"""
-	v_poisson = []
-	for k in range(1, size+1):
-		v_poisson.append(poisson_coordenates(lamda,k))
-
-	return v_poisson
 
 def mu_tau(tau, solution, self_value, self_vector):	
 	""" 
 	calculation of mu(tau)
-
-	Parameters
-	==========
-	float: tau.
-	solution: vector of 
-	numpy array: self_value: eigen values of A matrix.
-	numpy array: self_vector: eigen vector of A matrix.
-
-	Return
-	======
-	list: list of mu value to all k in tau time.  
 
 	"""
 
@@ -145,19 +95,13 @@ def mu_tau(tau, solution, self_value, self_vector):
 
 	return mu
 
-def lamda_tau(mu):
+def function_lambda(mu):
 	"""
 	Calculate lambda value using: 
-		lambda = SUM_{i=1}^M mu(i)
+		\lambda = \SUM_{i=1}^N \mu_i
 	where M is the longitud of mi vector mu.
 	
-	parameters
-	==========
-	list of floats: mu: 
-
-	return
-	======
-	float: 
+	:param ls mu: 
 	"""
 
 	lamda = 0
@@ -167,93 +111,36 @@ def lamda_tau(mu):
 
 def nu_tau(mu):
 	"""
-	Calculate lambda value using: 
-		lambda = SUM_{i=1}^M mu(i)
-	where M is the longitud of mi vector mu.
-	
-	parameters
-	==========
-
-	return
-	======
 
 	"""
-	lamda = lamda_tau(mu)
+	lamda = function_lambda(mu)
 	p = 0
 	for i in range(len(mu)):
 		p += i*(i-1)* mu[i]
 
 	return p/lamda
 
-def critical_t(solution, self_values, self_vector):
-	"""
-	
-	parameters
-	==========
-
-	return
-	======
-
-	"""
-	tau = 0
-	dtau = 0.01
-	t_c = 0
-	nu = 100
-	while nu > 1:
-		mu = mu_tau(tau, solution, self_values, self_vector)
-		nu = nu_tau(mu)
-		lamda= lamda_tau(mu)
-		t_c+= dtau * nu*lamda/math.log(math.exp(1), nu)
-		tau+=dtau
-	
-	return t_c
-		
 
 def solve_equation(lamda, size):
 	"""
-	parameters
-	==========
-
-	return
-	======
-
-	"""
-	#v_poisson, size = make_ver_uniform(lamda)
-	M = original_matrix(size) # crea la matriz
-	eigen_values, eigen_vectors = np.linalg.eig(M) # devuelve autovalores/vectores
-	v_poisson = make_vec_poisson(lamda, size)
+	:param int lamda: define the poission distribution around lamda. 
+	:param int size: Numbero of vector i want to solve the matritial equation.
 	
-	solution = np.linalg.solve(eigen_vectors, v_poisson)
+	:return list solution: Solution of the differential equation. 
+	:return list eigen_values: eigen values of matrix that describe the problem
+	:return list eigen_vectors: eigen vectors of matriax that describe the problem.
+	"""
+	M = original_matrix(size) # Get (and create) matrix.
+	eigen_values, eigen_vectors = np.linalg.eig(M) # Give eigen vuale, eigen vector of M.
+	v_poisson = make_vec_poisson(lamda, size) 
+	solution = np.linalg.solve(eigen_vectors, v_poisson) 
 	
 	return solution, eigen_values, eigen_vectors
 
-def empty_list(size):
-	"""
-	
-	parameters
-	==========
-
-	return
-	======
-
-	"""
-	empty_list = []
-	for i in range(0, size):
-		empty_list.append([])
-
-	return empty_list
-
 def mu_evolution(lamda, size, dtau):
 	"""
-	parameters
-	==========
-
-	return
-	======
-
 	"""
-	mu_matrix_evolution = empty_list(size)
-
+	mu_matrix_evolution = emptylist(size)
 	solution, self_values, self_vector = solve_equation(lamda, size)
 	
 	for tau in np.arange(0, 3, dtau):
@@ -263,100 +150,95 @@ def mu_evolution(lamda, size, dtau):
 
 	return mu_matrix_evolution
 
+def rescalingtime(mus, dtau):
+	t = []
+	t_c = 0
+	t_aux = 0
+	for i in range(len(mus[0])):
+		mu = []
+		for mu_k in mus:
+			mu.append(mu_k[i])
 
-def critical_nu(k, size, dtau):
+		nu = nu_tau(mu)
+		if nu>1:
+			fl = function_lambda(mu)
+			dt = tau2time(fl, nu, dtau)
+			t_aux += dt 
+			t_c = t_aux
+		else:
+			t_aux += dt 
+		t.append(t_aux)
+	return t, t_c
+
+def tau2time(l , nu, tau):
 	"""
-	
-	parameters
-	==========
+	trasform tau value in t value, to rescale the problem. 
+	:param int:
+	:param float l: function lamda 
+	:param float: 
 
-	return
-	======
-
+	:return float: time value. 
 	"""
-	tau_c = 0
-	nu = []
-	lamda = []
-	found = False
-	
-	solution, self_values, self_vector = solve_equation(k, size)
-	
-	for tau in np.arange(0, 3, dtau):
-		mu = mu_tau(tau, solution, self_values, self_vector)
-		nu.append(nu_tau(mu))
-		lamda.append(lamda_tau(mu))
-		if nu[int(tau/dtau)] < 1 and not found:
-			tau_c = tau
-			found = True
-	
-	return tau_c, nu, lamda
+	return  tau * ((nu-1) * l +1)/(math.log(math.exp(1), nu))
 
-def plot_nu(tau_c, nu, dtau, lamda=[]):
-	""".
-	parameters
-	==========
 
-	return
-	======
+def plot_mus(lamda, size, dtau, rescaling=True):
 
-	"""
-	plt.figure(1)
-	if lamda:
-		plt.plot(np.arange(0, 3, dtau), lamda, label='Lambda(tau)')
-			
-	plt.plot(np.arange(0, 3, dtau), nu, label='Nu(tau)')
-	plt.vlines(tau_c, 0, max(nu), colors='r', linestyles='dashed',  label=f'Critical Tau: {tau_c}')
+	mus = mu_evolution(lamda, size, dtau)
+	tau =  np.arange(0, 3, dtau)	
+	t_c = 0
+	if rescaling:
+		t, t_c = rescalingtime(mus, dtau)
+		print(t_c)
+	else:
+		t = tau
+		t_c = 2
+
+	for i in range(len(mus)):
+		
+		if i in [0, 1, 2, 3, 4, 5, 10, 15]:
+			plt.plot(t, mus[i], label=f'mu(k={i})')
+		else:
+			plt.plot(t, mus[i])
+
+	plt.vlines(t_c, 0, 0.5, linestyles='dashed', label='critical')
+
+	plt.xlabel('tau')
+	plt.ylabel('ratio nodos')
+	plt.title('Límite de grafo grande: Distribución de grados en tau.')
 	plt.legend()
 	plt.show()
 
-def plot_mus(mus, number_show, dtau):
-	"""
-	==========
-
-	return
-	======
-
-	"""
-	plt.figure(1)
-	for i in range(0, number_show):
-			plt.plot(list(np.arange(0, 3, dtau)), mus[i], label=f'mu(k={i})')
-	plt.legend()
-	plt.show()
-
-
-def critical_time_vs_lambda(lambda_min, lambda_max, size):
-	"""
-	Calculate lambda value using: 
-		lambda = SUM_{i=1}^M mu(i)
-	where M is the longitud of mi vector mu.
+def get_critical_time(k, size):
+	solution, eige_values, eige_vectors = solve_equation(k, size)
+	tau = 0
+	dtau = 0.001
+	t_c = 0
+	nu = 9999
 	
-	parameters
-	==========
+	while nu > 1:
+		mu = mu_tau(tau, solution, eige_values, eige_vectors)
+		nu = nu_tau(mu)
+		lamda = function_lambda(mu)
+		t_c+= tau2time(lamda, nu, dtau) 
+		tau+=dtau
+	
+	return t_c
 
-	return
-	======
 
-	"""
-	t_c = []
-	for i in range(lambda_min, lambda_max):
-		s, eige_values, eiges_vectors = solve_equation(i, size)
-		t_c.append(critical_t(s, eige_values, eiges_vectors))
 
-	plt.figure(1)
-	plt.plot(list(range(lambda_min, lambda_max)), t_c, 'ro', label='numerical results')
-	plt.legend()
-	plt.xlabel('Lambda')
-	plt.ylabel('Critical time')
-	plt.title('Large graph limit of critical times')
-	plt.show()
 
-a, b ,c= solve_equation(10, 30)
-print(c)
-#critical_time_vs_lambda(4, 20 , 1)
-#tau_c, nu, lamda = critical_nu(10, 10, 0.001)
+
+#print(get_critical_time(5, 30))
+#plot_mus(5, 30, 0.001, rescaling=True)
+
+#critical_time_vs_lambda(4, 15 , 100)
+#tau_c, nu, lamda = critical_nu(10, 50, 0.001)
 #plot_nu(tau_c, nu, 0.001, lamda=lamda)
-#mus = mu_evolution(10, 30, 0.001)
-#plot_mus(mus, 15,  0.001)
-#tau_c, nu, lamda= critical_nu(20, 35, 0.001)
+#N = 10000
+#mus, t_c = mu_evolution(10, 50, 0.001)
+#plot_mus(mus, 50,  0.001, t_c, nu)
+
+#tau_c, nu, lamda= critical_nu(10, 35, 0.001)
 #plot_nu(tau_c, nu, 0.001, lamda=lamda)
 

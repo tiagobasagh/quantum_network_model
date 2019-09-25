@@ -1,16 +1,19 @@
 # default libreries
 import math
 # extearnal libraries
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy.optimize import curve_fit
 
 from tools import get_data
 
 def shanon_entropy(p):
+	""" """
 	return - p * math.log(p)
 
 
 def calculate_entropy(name):
+	""" """
 	historic_probability = get_data(name)
 	historic_entropy = []
 	for probability in historic_probability:
@@ -23,28 +26,38 @@ def calculate_entropy(name):
 
 	return historic_entropy, math.log(N)
 
-def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, title='Entropy'):
-		plt.figure(1)
-		
+
+def plot_entropy(entropy_curves=[], labels=[], max_entropy=0, x_range=[], title='Entropy', pos=111):
+		""" """
+		plt.subplot(pos)
 		for s in range(len(entropy_curves)):
-			plt.plot(list(range(1,len(entropy_curves[s])+1)), entropy_curves[s], label= labels[s])
+			x_range = list(range(1,len(entropy_curves[s])+1))
+			#color = np.random.choice(np.arange(0,1,0.001), size=3)
+			color = '#36355b'
+			plt.plot(x_range, 
+				     entropy_curves[s], 
+				     label= labels[s]
+				     )
 
 		if len(entropy_curves) == 1:
 			
 			critical = critical_step(entropy_curves[0], max_entropy)
-			plt.hlines(max_entropy, 0, len(entropy_curves[0]), 
-			           colors='k', linestyles='dashed', label='Max entropy')
-			plt.vlines(critical, 0, max_entropy, 
-				       colors='r', linestyles='dashed', label=f'Critical connection: {critical}')
+			plt.hlines(max_entropy, 0, 17700, 
+			         colors='#8789ae', linestyles='dashed', label=f'Entropía Máxima: {int(100*max_entropy)/100}')
+			plt.vlines(x_range[critical], 0, max_entropy, 
+				       colors='#ff633d', linestyles='dashed', label=f'Conexión crítica: {critical+1}')
 		
-		plt.xlabel('Connections')
-		plt.ylabel('Entropy')
+		if not (pos==311 or pos==312):
+			plt.xlabel('Conexiones exitosas')	
+		
+		plt.ylabel('Entropía')
 		plt.legend(loc='best')
-		plt.title(title)
-		plt.show()
+		if pos==111: 
+			plt.title(title)
 
 
 def search_critical_steps(name=[]):
+	""" """
 	critical_steps = []
 
 	for file in name:
@@ -54,10 +67,10 @@ def search_critical_steps(name=[]):
 	return critical_steps
 
 def critical_step(entropy, max_entropy):
+	""" """
 	step = 0
 	while(entropy[step] < max_entropy/4) and (step < (len(entropy)-2)):
 		step+=1
-
 	return step
 
 

@@ -18,6 +18,16 @@ def fix_N(N, lamda_min, lamda_max, intervalo):
 			                                 name=f'fix_N_cm_poisson_{i}_{N}', 
 			                                 probability=False)
 
+def repeat(N, lamda, times):
+	for i in range(times):
+		G = BuilderNetworks.configuration_model(N, lamda)
+		ChannelOcupation(G).start_simulation(int(N*0.8), 
+			                                 name=f'cm_10_10000_({i})', 
+			                                 probability=False) 
+
+
+#repeat(10000, 10, 4)
+
 #lamda = 7
 #N_min = 6000
 #N_max = 18000
@@ -45,14 +55,14 @@ def repeat(lamda, N):
 		G = BuilderNetworks.configuration_model(N, lamda) # poisson por defecto
 		ChannelOcupation(G).start_simulation( int(N * 0.75) , 
 			                                 name=f'lamda_cm_poisson_{lamda}_{N}_{i}', 
-			                                 probability=False)
-lamda = 12
-N = 10000
-G = BuilderNetworks.configuration_model(N, lamda)
-ChannelOcupation(G).start_simulation(int(N) , 
-		                             name=f'lamda_cm_poisson_{lamda}_{N}', 
-		                             probability=False)
+	                                 probability=False)
+"""		
 """
+G = BuilderNetworks.erdos_renyi_model(50,1/25)
+ChannelOcupation(G).start_simulation(50, name='short_erdos', probability=False)
+"""
+
+
 
 """
 G = BuilderNetworks.tree_model(2, 13)
@@ -65,8 +75,34 @@ ChannelOcupation(G).start_simulation(5000,
 		                             name=f'tree_3_9', 
 		                             probability=False)
 """
-G = BuilderNetworks.barbaresi_model(10000, 5)
-ChannelOcupation(G).start_simulation(10000, 
-		                             name=f'bar_5_10000', 
-		                             probability=False)
+#G = BuilderNetworks.barbaresi_model(10000, 5)
+#ChannelOcupation(G).start_simulation(10000, name=f'bar_5_10000', probability=False)
+"""
+G = BuilderNetworks.unbalanced_tree(4, 8)
+ChannelOcupation(G).start_simulation(1800, name=f'unbalanced_tree_1_1', probability=False)
+"""
+"""
+G = BuilderNetworks.erdos_renyi_model(10000, 5/10000)
+ChannelOcupation(G).start_simulation(9000, name='er_5_10000', probability=False)
+"""
+#G = BuilderNetworks.erdos_renyi_model(10000, 10/10000)
+#ChannelOcupation(G).start_simulation(9000, name='er_10_10000', probability=False)
 
+#G = BuilderNetworks.erdos_renyi_model(10000, 15/10000)
+#ChannelOcupation(G).start_simulation(20000, name='er_15_10000', probability=False)
+
+
+
+#G = BuilderNetworks.barbaresi_model(10000, 1)
+#ChannelOcupation(G).start_simulation(10000, name=f'bar_1_10000', probability=False)
+
+
+#G = BuilderNetworks.configuration_model(10000, 5)
+#ChannelOcupation(G).start_simulation(3500, name='cm_5_10000', probability=False)
+
+#G = BuilderNetworks.configuration_model(10000, 10)
+#ChannelOcupation(G).start_simulation(9000, name='cm_10_10000', probability=False)
+N = 8000
+L = 9
+G = BuilderNetworks.configuration_model(N, L)
+ChannelOcupation(G).start_simulation(N * (L*1000)/N, name=f'fix_N_cm_poisson_{L}_{N}', probability=False)
