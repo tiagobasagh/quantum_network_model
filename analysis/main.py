@@ -19,9 +19,9 @@ labels=[]
 """
 s = []
 labels=[]
-entropy, max_entropy = ea.calculate_entropy('05_pt_er_10000')
+entropy, max_entropy = ea.calculate_entropy('05_pt_er_20000')
 s.append(entropy)
-label = 'BA(1, 10000)'
+label = 'ER'
 labels.append(label)
 ea.plot_entropy([entropy], [label],max_entropy, pos=111)
 """

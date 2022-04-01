@@ -3,14 +3,14 @@ import networkx as nx
 import numpy as np
 
 
-def add_plot(pos_y, pos_x, index, G, title, ):
+def add_plot(pos_y, pos_x, index, G, title):
 	plt.subplot(100*pos_y + 10 *pos_x + index)
 	
 	plt.title(f'{title}')
 	plt.axis('off')
 	nx.draw_circular(G, 
 		             with_labels=True, 
-		             node_size=120,
+		             node_size=600,
 		             node_color='red')
 
 def is_empty(array):
@@ -72,28 +72,12 @@ def distribution_model(G, N):
 			G.remove_edge(i,j)
 			index+=1
 
-"""
+
 N = 5
 plt.figure(1)
-#dist = [3,3,1,1,1,1,1]
-dist= [4,1,2,3, 2, 2]
-N = len(dist)
-plt.suptitle(f'Ejemplos modelo de configuracion con {N} nodos')
-for i in range(1, 7):
-	#G = nx.erdos_renyi_graph(N, i/(N-1))
-	if i <=3:
-		dist= [4,1,2,3, 2, 2]
-	else:
-		dist= [3,2,2,2, 3, 2]
-	
-	G , d = make_conf_model(dist)
-	print(d)
-	add_plot(2, 3, i, G, dist)
 
-"""
-plt.figure(1)
-plt.suptitle(f'Distribucion de grafos con N=4 y m=1')
-N = 4
-G = nx.empty_graph(N)
-distribution_model(G, N)
+plt.suptitle(f'Erdos-Renyi: {N} Nodos. P=0.5')
+for i in range(1, 7):
+	G = nx.erdos_renyi_graph(N, 0.5)
+	add_plot(2, 3, i, G, '')
 plt.show()

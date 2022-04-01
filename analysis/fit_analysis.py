@@ -81,10 +81,3 @@ def fix_size(schema_files, inicial, final, intervalo, size):
 	plt.title('Modelo de configuraciones: Lambda variante.')
 	plt.xlabel('Lambda')
 	plt.ylabel('Conexion crítica')
-	
-plt.figure(1)
-#fix_lamda('cm_poisson_10_{}',1000, 19000, 1000, 10)
-#fix_lamda('cm_poisson_7_{}',4000, 10000, 1000, 7)
-#fix_size('lamda_cm_poisson_{}_10000', 2, 12, 1, 10000)
-fix_size('fix_N_cm_poisson_{}_8000', 3, 9, 1, 8000)
-plt.show()

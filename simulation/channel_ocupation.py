@@ -4,7 +4,7 @@ import numpy as np
 
 from builder_networks import BuilderNetworks
 from config import stored_path
-from tools import list_to_dict, clean_dict
+from tools import list2dict, clean_dict
 
 class ChannelOcupation:
 	def __init__(self, G):
@@ -14,7 +14,6 @@ class ChannelOcupation:
 		for i_path in range(len(list_path)-1):
 			e = (list_path[i_path],list_path[i_path+1])
 			self.G.remove_edge(*e)
-
 
 	def get_degree_distribution(self, degree_dict):
 		degree_dict = degree_dict 
@@ -38,11 +37,30 @@ class ChannelOcupation:
 		f.write(f'{self.G.number_of_nodes()}\n')
 		f.close()
 
-	def start_simulation(self, total_steps, name='heterodoxia', probability=False):
+	def start_simulation(self, total_steps, name='results', savedegree=False):
+		""" 
+		Función principal de la simulacion. Guarda el tamaño de los subgrafos conexos que aparecen
+		a medida que se van ocupando los canales de ocupacion.
+
+		:params int total_steps: total de conexiones que se quieran realizar. 
+		:params string name: Nombre del archivo generado con los datos de la evolucion. 
+							 Por default es 'results'
+		:params boolean savedegree: Si es True ademas de los datos esperados, guardo la distrubición 
+		                            de los nodos en cada dado instante. Por default es False. 
+		                            Tener en cuenta que aunmenta los tiempos propios de la simulación.
+		
+		Ejemplo de uso:
+
+		ChannelOcuppation(G).start_similatiom()
+
+		donde G es un objeto de la liberia Networkx [https://networkx.github.io/]
+		"""
 		steps = 0
 		self.save_size_subgraphs(name)
-		#degree_dict = list_to_dict(list(set(dict(self.G.degree()).values())))
-		#self.save_distribution(name, degree_dict)
+		if savedegree:
+			degree_dict = list2dict(list(set(dict(self.G.degree()).values())))
+			self.save_distribution(name, degree_dict)
+		
 		while steps<= total_steps: 
 			node_1 = np.random.randint(1, len(self.G)) 
 			node_2 = np.random.randint(1, len(self.G))
@@ -50,23 +68,8 @@ class ChannelOcupation:
 			if (node_1 !=node_2) and nx.has_path(self.G, node_1, node_2):
 				self.remove_channel(nx.shortest_path(self.G, source=node_1, target=node_2))
 				self.save_size_subgraphs(name)
-				#self.save_distribution(name, degree_dict)
-				#egree_dict = clean_dict(degree_dict, 0)
+				if savedegree:
+					self.save_distribution(name, degree_dict)
+					egree_dict = clean_dict(degree_dict, 0)
 				steps+=1
-				print(steps)
-				if probability:
-					self.frecuency(f'{name}_frecuency')
-
 	
-	def frecuency(self, name):
-		sucefful = 0
-		for i in range(10000):
-			node_1 = np.random.randint(1, len(self.G)) 
-			node_2 = np.random.randint(1, len(self.G))
-
-			if (node_1 !=node_2) and nx.has_path(self.G, node_1, node_2):
-				sucefful+=1 
-
-		f=open(f'{stored_path.format(name)}',"a+")
-		f.write(f'{sucefful/10000 }\n')
-		f.close()

@@ -1,6 +1,7 @@
 import numpy as np
 
 def make_distribution(size, scale, name, loc):
+	
 	dic_distributions = {'poisson': np.random.poisson,
 	                     'power': np.random.power,
 	                     'normal': np.random.normal,
@@ -14,7 +15,7 @@ def make_distribution(size, scale, name, loc):
 	return distribution.tolist()
 
 
-def list_to_dict(key_list):
+def list2dict(key_list):
 	key_dict = {}
 	for k in range(max(key_list)+1):
 		key_dict[k]= 0
